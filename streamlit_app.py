@@ -5,23 +5,17 @@ import base64
 
 st.set_page_config(page_title="PPR Release Form Dashboard", layout="wide")
 
-st.markdown("## 💰 Paid Pending Report (PPR) Dashboard")
+st.title("💰 Paid Pending Report (PPR) Dashboard")
 
-# -----------------------------------------------------------
-# SIDEBAR FILTERS
-# -----------------------------------------------------------
-
-st.sidebar.header("Filters")
-
-# -----------------------------------------------------------
+# ---------------------------------------------------------
 # FILE UPLOAD
-# -----------------------------------------------------------
+# ---------------------------------------------------------
 
 file = st.file_uploader("Upload PPR Excel/CSV File", type=["xlsx","xls","csv"])
 
-# -----------------------------------------------------------
+# ---------------------------------------------------------
 # RELEASE FORM HTML
-# -----------------------------------------------------------
+# ---------------------------------------------------------
 
 def create_release_html(row):
 
@@ -41,32 +35,31 @@ def create_release_html(row):
 
 @page {{
 size:A4;
-margin:10mm;
+margin:8mm;
 }}
 
 body {{
 font-family:'Shruti','Nirmala UI';
-font-size:14px;
-line-height:1.3;
+font-size:12px;
+line-height:1.15;
 }}
 
 .header {{
 text-align:center;
 font-weight:bold;
-font-size:22px;
+font-size:18px;
 }}
 
 .subheader {{
 text-align:center;
-font-size:14px;
-margin-bottom:10px;
+font-size:13px;
 }}
 
 .title {{
 text-align:center;
 font-weight:bold;
-font-size:16px;
-margin-bottom:10px;
+font-size:14px;
+margin-bottom:4px;
 }}
 
 table {{
@@ -76,18 +69,16 @@ border-collapse:collapse;
 
 td {{
 border:1px solid black;
-padding:6px;
-vertical-align:top;
-}}
-
-.section {{
-font-weight:bold;
-background:#efefef;
+padding:3px;
 }}
 
 .bold {{
 font-weight:bold;
-font-size:15px;
+}}
+
+.section {{
+font-weight:bold;
+background:#f3f3f3;
 }}
 
 </style>
@@ -103,7 +94,7 @@ font-size:15px;
 <table>
 
 <tr>
-<td width="30%">ગ્રાહકનું નામ</td>
+<td width="35%">ગ્રાહકનું નામ</td>
 <td>{row.get("Name Of Applicant","")}</td>
 </tr>
 
@@ -171,62 +162,78 @@ font-size:15px;
 <td>{mobile}</td>
 </tr>
 
-</table>
-
-<br>
-
-<table>
-
 <tr class="section">
 <td colspan="2">૫. માલ સામાન વપરાશની નોંધ</td>
 </tr>
 
 <tr>
-<td colspan="2">
-સર્વિસ વાયર પી.વી.સી. ______ કોર ______ એમ.એમ. ______ મીટર
-</td>
+<td colspan="2">સર્વિસ વાયર પી.વી.સી. ______ કોર ______ એમ.એમ. ______ મીટર</td>
 </tr>
 
 <tr>
-<td colspan="2">
-ELCB Make _________ &nbsp;&nbsp;&nbsp; Capacity _________
-</td>
+<td colspan="2">ELCB Make _________ &nbsp;&nbsp; Capacity _________</td>
 </tr>
 
 <tr>
-<td colspan="2">
-1-Ph SMC બોક્ષ ______ નંગ &nbsp;&nbsp; | &nbsp;&nbsp; 3-Ph SMC બોક્ષ ______ નંગ
-</td>
+<td colspan="2">1-Ph SMC બોક્ષ ______ નંગ | 3-Ph SMC બોક્ષ ______ નંગ</td>
 </tr>
 
 <tr class="section">
-<td colspan="2">મીટર વિગતો (Manual Entry)</td>
+<td colspan="2" class="bold">મીટર વિગતો</td>
 </tr>
 
 <tr>
-<td colspan="2" style="height:120px">
-&nbsp;
-</td>
+<td>કંપની</td>
+<td>____________</td>
 </tr>
 
-</table>
+<tr>
+<td>ટાઈપ</td>
+<td>____________</td>
+</tr>
 
-<br>
+<tr>
+<td>કેપેસિટી</td>
+<td>____________</td>
+</tr>
 
-<table>
+<tr>
+<td>આંટા</td>
+<td>____________</td>
+</tr>
+
+<tr>
+<td>મીટર નંબર</td>
+<td>____________</td>
+</tr>
+
+<tr>
+<td>લેબ નંબર</td>
+<td>____________</td>
+</tr>
+
+<tr>
+<td>રીડિંગ</td>
+<td>____________</td>
+</tr>
+
+<tr>
+<td>બોડી સીલ</td>
+<td>____________</td>
+</tr>
 
 <tr class="section">
 <td colspan="2">૬. સીલ ની વિગત</td>
 </tr>
 
 <tr>
-<td width="40%">ટર્મિનલ સીલ</td>
-<td>______________________</td>
+<td>ટર્મિનલ સીલ</td>
+<td>________________</td>
 </tr>
 
 <tr>
 <td>SMC Box સીલ</td>
-<td>______________________</td>
+<td>________________</td>
 </tr>
 
 <tr class="section">
@@ -234,9 +241,7 @@ ELCB Make _________ &nbsp;&nbsp;&nbsp; Capacity _________
 </tr>
 
 <tr>
-<td colspan="2">
-મીટર બોર્ડ __________ નંગ (TKJ / ZP Only)
-</td>
+<td colspan="2">મીટર બોર્ડ __________ નંગ (TKJ / ZP Only)</td>
 </tr>
 
 <tr class="section">
@@ -244,9 +249,7 @@ ELCB Make _________ &nbsp;&nbsp;&nbsp; Capacity _________
 </tr>
 
 <tr>
-<td colspan="2">
-રીલ ઇન્સ્યુલેટર ______ નંગ | એગ ઇન્સ્યુલેટર ______ નંગ | GI વાયર 10 ______ મીટર
-</td>
+<td colspan="2">રીલ ઇન્સ્યુલેટર ______ નંગ | એગ ઇન્સ્યુલેટર ______ નંગ | GI વાયર 10 ______ મીટર</td>
 </tr>
 
 <tr class="section">
@@ -254,9 +257,7 @@ ELCB Make _________ &nbsp;&nbsp;&nbsp; Capacity _________
 </tr>
 
 <tr>
-<td colspan="2">
-અરથીંગ વાયર ______ મીટર | અરથીંગ પાઇપ ______ નંગ
-</td>
+<td colspan="2">અરથીંગ વાયર ______ મીટર | અરથીંગ પાઇપ ______ નંગ</td>
 </tr>
 
 <tr class="section">
@@ -264,15 +265,11 @@ ELCB Make _________ &nbsp;&nbsp;&nbsp; Capacity _________
 </tr>
 
 <tr>
-<td colspan="2">
-મીટર પેટી ની ઊંચાઈ ૫ ફિટ કરતાં વધારે નથી (હા/ના)? __________
-</td>
+<td colspan="2">મીટર પેટી ની ઊંચાઈ ૫ ફિટ કરતાં વધારે નથી (હા/ના)? ______</td>
 </tr>
 
 <tr>
-<td colspan="2">
-મીટર / મીટર પેટી / સીલિંગ તથા સર્વિસ લાઇન ગ્રાહક તરીકે સાચવવાની સંપૂર્ણ જવાબદારી મારી છે.
-</td>
+<td colspan="2">મીટર / મીટર પેટી / સીલિંગ તથા સર્વિસ લાઇન ગ્રાહક તરીકે સાચવવાની સંપૂર્ણ જવાબદારી મારી છે.</td>
 </tr>
 
 </table>
@@ -294,41 +291,27 @@ ELCB Make _________ &nbsp;&nbsp;&nbsp; Capacity _________
 </html>
 """
 
-    return base64.b64encode(html.encode("utf-8")).decode()
+    return base64.b64encode(html.encode()).decode()
 
-# -----------------------------------------------------------
+# ---------------------------------------------------------
 # PROCESS FILE
-# -----------------------------------------------------------
+# ---------------------------------------------------------
 
 if file:
 
     df = pd.read_csv(file) if file.name.endswith(".csv") else pd.read_excel(file)
 
-    df["SR Type"] = df["SR Type"].astype(str).str.strip()
-    df["Name Of Scheme"] = df["Name Of Scheme"].astype(str).str.strip()
-    df["Survey Category"] = df["Survey Category"].astype(str).str.strip()
-
-    # -----------------------------------------------------------
-    # MULTI SELECT FILTERS
-    # -----------------------------------------------------------
-
-    sr_types = sorted(df["SR Type"].dropna().unique())
-    selected_sr = st.sidebar.multiselect("SR Type", sr_types, default=sr_types)
-
-    df = df[df["SR Type"].isin(selected_sr)]
-
-    schemes = sorted(df["Name Of Scheme"].dropna().unique())
-    selected_scheme = st.sidebar.multiselect("Name Of Scheme", schemes, default=schemes)
-
-    df = df[df["Name Of Scheme"].isin(selected_scheme)]
-
-    survey_list = sorted(df["Survey Category"].dropna().unique())
-    survey_filter = st.selectbox("Survey Category", ["All"] + survey_list)
-
-    if survey_filter != "All":
-        df = df[df["Survey Category"] == survey_filter]
-
     df.insert(0,"Sr No",range(1,len(df)+1))
+
+    sr_types=sorted(df["SR Type"].dropna().unique())
+    selected_sr=st.sidebar.multiselect("SR Type",sr_types,default=sr_types)
+
+    df=df[df["SR Type"].isin(selected_sr)]
+
+    schemes=sorted(df["Name Of Scheme"].dropna().unique())
+    selected_scheme=st.sidebar.multiselect("Name Of Scheme",schemes,default=schemes)
+
+    df=df[df["Name Of Scheme"].isin(selected_scheme)]
 
     def generate_print(row):
 
@@ -341,22 +324,14 @@ if file:
 
     df.insert(1,"Print","")
 
-    st.metric("Total Records",len(df))
-
-# -----------------------------------------------------------
-# GRID
-# -----------------------------------------------------------
-
-    renderer = JsCode("""
+    renderer=JsCode("""
 
 class Renderer{
 
 init(params){
 
 this.eGui=document.createElement('span');
-
 this.eGui.innerHTML='🖨';
-
 this.eGui.style.cursor='pointer';
 
 this.eGui.addEventListener('click',()=>{
@@ -368,11 +343,9 @@ if(b64=="") return;
 const win=window.open("","_blank");
 
 const bytes=Uint8Array.from(atob(b64),c=>c.charCodeAt(0));
-
 const html=new TextDecoder("utf-8").decode(bytes);
 
 win.document.write(html);
-
 win.document.close();
 
 });
@@ -382,18 +355,11 @@ win.document.close();
 getGui(){return this.eGui;}
 
 }
-
 """)
 
-    gb = GridOptionsBuilder.from_dataframe(df)
+    gb=GridOptionsBuilder.from_dataframe(df)
 
-    gb.configure_default_column(
-        filter=True,
-        sortable=True,
-        resizable=True,
-        flex=1,
-        minWidth=120
-    )
+    gb.configure_default_column(filter=True,sortable=True,resizable=True,flex=1,minWidth=120)
 
     gb.configure_column("Print",cellRenderer=renderer,width=70)
     gb.configure_column("release_html",hide=True)
