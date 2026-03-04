@@ -35,37 +35,31 @@ def create_release_html(row):
 
 @page {{
 size:A4;
-margin:6mm;
+margin:8mm;
 }}
 
 body {{
 font-family:'Shruti','Nirmala UI';
-font-size:12px;
-line-height:1.2;
+font-size:14px;
+line-height:1.25;
 }}
 
 .header {{
 text-align:center;
 font-weight:bold;
-font-size:20px;
+font-size:22px;
 }}
 
 .subheader {{
 text-align:center;
-font-size:14px;
+font-size:16px;
 }}
 
 .title {{
 text-align:center;
 font-weight:bold;
-font-size:15px;
-margin-bottom:6px;
-}}
-
-.grid {{
-display:grid;
-grid-template-columns:70% 30%;
-gap:8px;
+font-size:17px;
+margin-bottom:8px;
 }}
 
 table {{
@@ -74,36 +68,49 @@ border-collapse:collapse;
 }}
 
 td {{
-padding:4px;
+padding:6px;
 vertical-align:top;
 }}
 
 .line {{
 border-bottom:1px solid black;
-width:100%;
 display:inline-block;
+width:100%;
 }}
 
 .bold {{
 font-weight:bold;
+font-size:16px;
+}}
+
+.section {{
+font-weight:bold;
+margin-top:6px;
+}}
+
+.box-row {{
+display:flex;
+gap:8px;
+margin-top:8px;
 }}
 
 .box {{
 border:1.5px solid black;
-padding:6px;
-margin-bottom:6px;
+padding:8px;
+flex:1;
+font-size:13px;
 }}
 
 .box-title {{
 font-weight:bold;
 border-bottom:1px solid black;
-margin-bottom:4px;
-padding-bottom:2px;
+margin-bottom:6px;
+padding-bottom:3px;
 }}
 
 .signature td {{
 text-align:center;
-padding-top:20px;
+padding-top:24px;
 }}
 
 </style>
@@ -114,13 +121,8 @@ padding-top:20px;
 
 <div class="header">મધ્ય ગુજરાત વીજ કંપની લી.</div>
 <div class="subheader">વિરપુર</div>
+
 <div class="title">નવું કનેક્શન ચાલુ કર્યા અંગેનો રિપોર્ટ</div>
-
-<div class="grid">
-
-<!-- LEFT SIDE -->
-
-<div>
 
 <table>
 
@@ -195,9 +197,7 @@ padding-top:20px;
 
 </table>
 
-<br>
-
-<div class="bold">૫. માલ સામાન વપરાશની નોંધ</div>
+<div class="section">૫. માલ સામાન વપરાશની નોંધ</div>
 
 <div>
 સર્વિસ વાયર પી.વી.સી. ______ કોર ______ એમ.એમ. ______ મીટર
@@ -211,11 +211,7 @@ ELCB Make _________ &nbsp;&nbsp; Capacity _________
 1-Ph SMC બોક્ષ ______ નંગ &nbsp;&nbsp; | &nbsp;&nbsp; 3-Ph SMC બોક્ષ ______ નંગ
 </div>
 
-</div>
-
-<!-- RIGHT SIDE -->
-
-<div>
+<br>
 
 <div class="box">
 
@@ -223,18 +219,20 @@ ELCB Make _________ &nbsp;&nbsp; Capacity _________
 
 <table>
 
-<tr><td>કંપની</td><td>________</td></tr>
-<tr><td>ટાઈપ</td><td>________</td></tr>
-<tr><td>કેપેસિટી</td><td>________</td></tr>
-<tr><td>આંટા</td><td>________</td></tr>
-<tr><td>મીટર નંબર</td><td>________</td></tr>
-<tr><td>લેબ નંબર</td><td>________</td></tr>
-<tr><td>રીડિંગ</td><td>________</td></tr>
-<tr><td>બોડી સીલ</td><td>________</td></tr>
+<tr><td width="40%">કંપની</td><td>____________</td></tr>
+<tr><td>ટાઈપ</td><td>____________</td></tr>
+<tr><td>કેપેસિટી</td><td>____________</td></tr>
+<tr><td>આંટા</td><td>____________</td></tr>
+<tr><td>મીટર નંબર</td><td>____________</td></tr>
+<tr><td>લેબ નંબર</td><td>____________</td></tr>
+<tr><td>રીડિંગ</td><td>____________</td></tr>
+<tr><td>બોડી સીલ</td><td>____________</td></tr>
 
 </table>
 
 </div>
+
+<div class="box-row">
 
 <div class="box">
 
@@ -247,31 +245,30 @@ SMC Box સીલ : __________
 
 <div class="box">
 
-<div class="box-title">૭–૯ અન્ય વિગતો</div>
+<div class="box-title">૭. મીટર બોર્ડ</div>
 
-મીટર બોર્ડ ______ નંગ<br>
-
-રીલ ઇન્સ્યુલેટર ______<br>
-એગ ઇન્સ્યુલેટર ______<br>
-
-GI વાયર 10 ______ મીટર<br>
-
-અરથીંગ વાયર ______ મીટર<br>
-અરથીંગ પાઇપ ______ નંગ
+મીટર બોર્ડ ______ નંગ
 
 </div>
 
 <div class="box">
 
-<div class="box-title">૧૦. મીટર પેટી</div>
+<div class="box-title">૮. ઇન્સ્યુલેટર</div>
 
-મીટર પેટી ની ઊંચાઈ ૫ ફિટ કરતાં વધારે નથી ? ______
-
-<br><br>
-
-મીટર / મીટર પેટી / સીલિંગ તથા સર્વિસ લાઇન ગ્રાહક તરીકે સાચવવાની જવાબદારી મારી છે.
+રીલ ઇન્સ્યુલેટર ______<br>
+એગ ઇન્સ્યુલેટર ______<br>
+GI વાયર 10 ______ મીટર
 
 </div>
+
+<div class="box">
+
+<div class="box-title">૯–૧૦ અન્ય વિગતો</div>
+
+અરથીંગ વાયર ______ મીટર<br>
+અરથીંગ પાઇપ ______ નંગ<br><br>
+
+મીટર પેટી ૫ ફિટ કરતાં વધારે નથી ? ______
 
 </div>
 
