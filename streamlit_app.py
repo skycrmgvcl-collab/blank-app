@@ -35,31 +35,32 @@ def create_release_html(row):
 
 @page {{
 size:A4;
-margin:8mm;
+margin:10mm;
 }}
 
 body {{
 font-family:'Shruti','Nirmala UI';
-font-size:12px;
-line-height:1.15;
+font-size:13px;
+line-height:1.25;
 }}
 
 .header {{
 text-align:center;
 font-weight:bold;
-font-size:18px;
+font-size:20px;
 }}
 
 .subheader {{
 text-align:center;
-font-size:13px;
+font-size:14px;
+margin-bottom:4px;
 }}
 
 .title {{
 text-align:center;
 font-weight:bold;
-font-size:14px;
-margin-bottom:4px;
+font-size:16px;
+margin-bottom:10px;
 }}
 
 table {{
@@ -68,17 +69,29 @@ border-collapse:collapse;
 }}
 
 td {{
-border:1px solid black;
-padding:3px;
+padding:4px;
+vertical-align:top;
+}}
+
+.line {{
+border-bottom:1px solid black;
+display:inline-block;
+width:100%;
 }}
 
 .bold {{
 font-weight:bold;
+font-size:15px;
 }}
 
 .section {{
 font-weight:bold;
-background:#f3f3f3;
+padding-top:6px;
+}}
+
+.signature td {{
+text-align:center;
+padding-top:20px;
 }}
 
 </style>
@@ -89,38 +102,39 @@ background:#f3f3f3;
 
 <div class="header">મધ્ય ગુજરાત વીજ કંપની લી.</div>
 <div class="subheader">વિરપુર</div>
+
 <div class="title">નવું કનેક્શન ચાલુ કર્યા અંગેનો રિપોર્ટ</div>
 
 <table>
 
 <tr>
-<td width="35%">ગ્રાહકનું નામ</td>
-<td>{row.get("Name Of Applicant","")}</td>
+<td width="30%">ગ્રાહકનું નામ</td>
+<td class="line">{row.get("Name Of Applicant","")}</td>
 </tr>
 
 <tr>
-<td class="bold">SR No</td>
+<td class="bold">SR No.</td>
 <td class="bold">{row.get("SR Number","")}</td>
 </tr>
 
 <tr>
 <td>SR Type</td>
-<td>{row.get("SR Type","")}</td>
+<td class="line">{row.get("SR Type","")}</td>
 </tr>
 
 <tr>
 <td>Name Of Scheme</td>
-<td>{row.get("Name Of Scheme","")}</td>
+<td class="line">{row.get("Name Of Scheme","")}</td>
 </tr>
 
 <tr>
 <td>લોડ</td>
-<td>{row.get("Demand Load","")} {row.get("Load Uom","")}</td>
+<td class="line">{row.get("Demand Load","")} {row.get("Load Uom","")}</td>
 </tr>
 
 <tr>
 <td>સરનામું</td>
-<td>
+<td class="line">
 {row.get("Address1","")}
 {row.get("Address2","")}
 {row.get("Village Or City","")}
@@ -129,101 +143,113 @@ background:#f3f3f3;
 
 <tr>
 <td>Tariff</td>
-<td>{row.get("Tariff","")}</td>
+<td class="line">{row.get("Tariff","")}</td>
 </tr>
 
 <tr>
 <td>Survey Category</td>
-<td>{row.get("Survey Category","")}</td>
+<td class="line">{row.get("Survey Category","")}</td>
 </tr>
 
 <tr>
 <td>FQ Amount</td>
-<td>{row.get("FQ Amount","")}</td>
+<td class="line">{row.get("FQ Amount","")}</td>
 </tr>
 
 <tr>
 <td>FQ Paid Date</td>
-<td>{row.get("Date Of FQ Paid","")}</td>
+<td class="line">{row.get("Date Of FQ Paid","")}</td>
 </tr>
 
 <tr>
 <td>ટેસ્ટ રીપોર્ટ તા.</td>
-<td>{row.get("Date Of TR Recv","")}</td>
+<td class="line">{row.get("Date Of TR Recv","")}</td>
 </tr>
 
 <tr>
 <td>રસીદ નં</td>
-<td>{row.get("TR MR No","")}</td>
+<td class="line">{row.get("TR MR No","")}</td>
 </tr>
 
 <tr>
 <td>મોબાઇલ નંબર</td>
-<td>{mobile}</td>
+<td class="line">{mobile}</td>
 </tr>
 
-<tr class="section">
-<td colspan="2">૫. માલ સામાન વપરાશની નોંધ</td>
+</table>
+
+<br>
+
+<table>
+
+<tr>
+<td colspan="2" class="section">૫. માલ સામાન વપરાશની નોંધ</td>
 </tr>
 
 <tr>
-<td colspan="2">સર્વિસ વાયર પી.વી.સી. ______ કોર ______ એમ.એમ. ______ મીટર</td>
+<td colspan="2">
+(૧) સર્વિસ વાયર પી.વી.સી. ______ કોર ______ એમ.એમ. ______ મીટર
+</td>
 </tr>
 
 <tr>
-<td colspan="2">ELCB Make _________ &nbsp;&nbsp; Capacity _________</td>
+<td colspan="2">
+(૨) ELCB Make _________ &nbsp;&nbsp; Capacity _________
+</td>
 </tr>
 
 <tr>
-<td colspan="2">1-Ph SMC બોક્ષ ______ નંગ | 3-Ph SMC બોક્ષ ______ નંગ</td>
+<td colspan="2">
+(૩) 1-Ph SMC બોક્ષ ______ નંગ &nbsp;&nbsp; | &nbsp;&nbsp; 3-Ph SMC બોક્ષ ______ નંગ
+</td>
 </tr>
 
-<tr class="section">
+<tr>
 <td colspan="2" class="bold">મીટર વિગતો</td>
 </tr>
 
 <tr>
-<td>કંપની</td>
-<td>____________</td>
+<td width="50%">કંપની</td>
+<td>________________</td>
 </tr>
 
 <tr>
 <td>ટાઈપ</td>
-<td>____________</td>
+<td>________________</td>
 </tr>
 
 <tr>
 <td>કેપેસિટી</td>
-<td>____________</td>
+<td>________________</td>
 </tr>
 
 <tr>
 <td>આંટા</td>
-<td>____________</td>
+<td>________________</td>
 </tr>
 
 <tr>
 <td>મીટર નંબર</td>
-<td>____________</td>
+<td>________________</td>
 </tr>
 
 <tr>
 <td>લેબ નંબર</td>
-<td>____________</td>
+<td>________________</td>
 </tr>
 
 <tr>
 <td>રીડિંગ</td>
-<td>____________</td>
+<td>________________</td>
 </tr>
 
 <tr>
 <td>બોડી સીલ</td>
-<td>____________</td>
+<td>________________</td>
 </tr>
 
-<tr class="section">
-<td colspan="2">૬. સીલ ની વિગત</td>
+<tr>
+<td colspan="2" class="section">૬. સીલ ની વિગત</td>
 </tr>
 
 <tr>
@@ -236,53 +262,61 @@ background:#f3f3f3;
 <td>________________</td>
 </tr>
 
-<tr class="section">
-<td colspan="2">૭. મીટર બોર્ડ</td>
+<tr>
+<td colspan="2" class="section">૭. મીટર બોર્ડ</td>
 </tr>
 
 <tr>
 <td colspan="2">મીટર બોર્ડ __________ નંગ (TKJ / ZP Only)</td>
 </tr>
 
-<tr class="section">
-<td colspan="2">૮. ઇન્સ્યુલેટર વિગતો</td>
+<tr>
+<td colspan="2" class="section">૮. ઇન્સ્યુલેટર વિગતો</td>
 </tr>
 
 <tr>
-<td colspan="2">રીલ ઇન્સ્યુલેટર ______ નંગ | એગ ઇન્સ્યુલેટર ______ નંગ | GI વાયર 10 ______ મીટર</td>
-</tr>
-
-<tr class="section">
-<td colspan="2">૯. અર્થિંગ</td>
-</tr>
-
-<tr>
-<td colspan="2">અરથીંગ વાયર ______ મીટર | અરથીંગ પાઇપ ______ નંગ</td>
-</tr>
-
-<tr class="section">
-<td colspan="2">૧૦. મીટર પેટી</td>
+<td colspan="2">
+રીલ ઇન્સ્યુલેટર ______ નંગ | એગ ઇન્સ્યુલેટર ______ નંગ | GI વાયર 10 ______ મીટર
+</td>
 </tr>
 
 <tr>
-<td colspan="2">મીટર પેટી ની ઊંચાઈ ૫ ફિટ કરતાં વધારે નથી (હા/ના)? ______</td>
+<td colspan="2" class="section">૯. અર્થિંગ</td>
 </tr>
 
 <tr>
-<td colspan="2">મીટર / મીટર પેટી / સીલિંગ તથા સર્વિસ લાઇન ગ્રાહક તરીકે સાચવવાની સંપૂર્ણ જવાબદારી મારી છે.</td>
+<td colspan="2">
+અરથીંગ વાયર ______ મીટર | અરથીંગ પાઇપ ______ નંગ
+</td>
+</tr>
+
+<tr>
+<td colspan="2" class="section">૧૦. મીટર પેટી</td>
+</tr>
+
+<tr>
+<td colspan="2">
+મીટર પેટી ની ઊંચાઈ ૫ ફિટ કરતાં વધારે નથી (હા/ના)? ______
+</td>
+</tr>
+
+<tr>
+<td colspan="2">
+મીટર / મીટર પેટી / સીલિંગ તથા સર્વિસ લાઇન ગ્રાહક તરીકે સાચવવાની સંપૂર્ણ જવાબદારી મારી છે.
+</td>
 </tr>
 
 </table>
 
 <br>
 
-<table>
+<table class="signature">
 
 <tr>
-<td style="text-align:center">ગ્રાહકની સહી</td>
-<td style="text-align:center">કર્મચારી ની સહી</td>
-<td style="text-align:center">જુ.ઇ. સહી</td>
-<td style="text-align:center">ના.ઇ. સહી</td>
+<td>ગ્રાહકની સહી</td>
+<td>કર્મચારી ની સહી</td>
+<td>જુ.ઇ. સહી</td>
+<td>ના.ઇ. સહી</td>
 </tr>
 
 </table>
