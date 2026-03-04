@@ -1,9 +1,8 @@
 import streamlit as st
 import pandas as pd
-from st_aggrid import AgGrid, GridOptionsBuilder, GridUpdateMode, JsCode
-from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
+from st_aggrid import AgGrid, GridOptionsBuilder, GridUpdateMode
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle
 from reportlab.lib.pagesizes import A4
-from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib.units import mm
 from reportlab.lib import colors
 import io
@@ -11,11 +10,10 @@ import io
 st.set_page_config(page_title="PPR Paid Pending Dashboard", layout="wide")
 
 st.title("💰 Paid Pending Report (PPR) Dashboard")
-st.caption("Survey Category Wise Monitoring")
 
-# -------------------------------------------------
-# Sidebar Filters
-# -------------------------------------------------
+# --------------------------------------------------
+# SIDEBAR
+# --------------------------------------------------
 
 st.sidebar.header("Filters")
 
@@ -23,15 +21,16 @@ show_shift = st.sidebar.checkbox("Connection Shifting (Non Cons)")
 show_pmsy = st.sidebar.checkbox("PMSY RTS")
 show_rooftop = st.sidebar.checkbox("LT Rooftop")
 
-# -------------------------------------------------
-# File Upload
-# -------------------------------------------------
+# --------------------------------------------------
+# FILE UPLOAD
+# --------------------------------------------------
 
 file = st.file_uploader("Upload PPR Excel/CSV File", type=["xlsx","xls","csv"])
 
-# -------------------------------------------------
-# PDF FORM CREATION
-# -------------------------------------------------
+
+# --------------------------------------------------
+# PDF GENERATION
+# --------------------------------------------------
 
 def create_pdf(rec):
 
@@ -46,11 +45,11 @@ def create_pdf(rec):
         bottomMargin=20
     )
 
-    styles = getSampleStyleSheet()
-
     mobile = ""
-    if "Mobile No" in rec.index:
-        mobile = rec["Mobile No"]
+
+    for col in rec.index:
+        if "mob" in col.lower():
+            mobile = rec[col]
 
     address = f"{rec.get('Address1','')} {rec.get('Address2','')} {rec.get('Village Or City','')}"
 
@@ -58,29 +57,30 @@ def create_pdf(rec):
 
         ["મધ્ય ગુજરાત વીજ કંપની લી.", ""],
         ["વિરપુર", ""],
-        ["(AN ISO 9001:2000 CERTIFIED COMPANY)", ""],
 
         ["પ્રતિ શ્રી", ""],
-        ["નાયબ ઇજનેરશ્રી (સં અને નિ)", f"તારીખ: {rec.get('Date Of Release Conn','')}"],
-        ["એમ.જી.વી.સી.એલ. - પેટા વિભાગીય કચેરી", f"ગ્રાહક નં: {rec.get('Consumer No','')}"],
-        ["વિરપુર", ""],
+        ["નાયબ ઇજનેરશ્રી (સં અને નિ)", ""],
 
-        ["વિષય: નવું કનેક્શન ચાલુ કર્યા અંગેનો રિપોર્ટ", ""],
+        ["તારીખ", rec.get("Date Of Release Conn","")],
+        ["ગ્રાહક નં", rec.get("Consumer No","")],
 
-        ["૧ ગ્રાહકનું નામ", rec.get("Name Of Applicant","")],
-        ["૨ SR No", rec.get("SR Number","")],
-        ["લોડ (KW)", rec.get("Demand Load","")],
+        ["ગ્રાહકનું નામ", rec.get("Name Of Applicant","")],
+
+        ["SR Number", rec.get("SR Number","")],
+        ["Load (KW)", rec.get("Demand Load","")],
 
         ["સરનામું", address],
-        ["Tariff", rec.get("Tariff","")],
-        ["Mob.No", mobile],
 
-        ["Survey Cat.", rec.get("Survey Category","")],
-        ["FQ Amt", rec.get("FQ Amount","")],
+        ["Tariff", rec.get("Tariff","")],
+        ["Mobile", mobile],
+
+        ["Survey Category", rec.get("Survey Category","")],
+
+        ["FQ Amount", rec.get("FQ Amount","")],
         ["FQ Paid", rec.get("Date Of FQ Paid","")],
 
-        ["પૈસા ભર્યાની રસીદ નં", rec.get("TR MR No","")],
-        ["ટેસ્ટ રીપોર્ટ તા.", rec.get("Date Of TR Recv","")],
+        ["Test Report Date", rec.get("Date Of TR Recv","")],
+        ["Receipt No", rec.get("TR MR No","")],
 
         ["", ""],
 
@@ -89,21 +89,16 @@ def create_pdf(rec):
 
     ]
 
-    table = Table(data, colWidths=[90*mm, 100*mm])
+    table = Table(data, colWidths=[90*mm,100*mm])
 
     table.setStyle(TableStyle([
 
-        ("BOX",(0,0),(-1,-1),1,colors.black),
-        ("GRID",(0,0),(-1,-1),0.5,colors.grey),
-
-        ("FONTNAME",(0,0),(-1,-1),"Helvetica"),
-        ("FONTSIZE",(0,0),(-1,-1),10),
+        ("GRID",(0,0),(-1,-1),0.5,colors.black),
+        ("BOX",(0,0),(-1,-1),1,colors.black)
 
     ]))
 
-    elements = []
-
-    elements.append(table)
+    elements = [table]
 
     doc.build(elements)
 
@@ -112,9 +107,9 @@ def create_pdf(rec):
     return buffer
 
 
-# -------------------------------------------------
-# Main Logic
-# -------------------------------------------------
+# --------------------------------------------------
+# MAIN PROCESS
+# --------------------------------------------------
 
 if file:
 
@@ -130,17 +125,27 @@ if file:
     df = df[df["SR Type"].str.lower() != "change of name"]
     df = df[df["Name Of Scheme"].str.lower() != "spa schemes"]
 
+# --------------------------------------------------
+# SR TYPE FILTER
+# --------------------------------------------------
+
     selected_types = []
 
     if show_shift:
         selected_types.append("Connection Shifting(Non Cons)")
+
     if show_pmsy:
         selected_types.append("PMSY RTS")
+
     if show_rooftop:
         selected_types.append("LT Rooftop")
 
     if selected_types:
         df = df[df["SR Type"].isin(selected_types)]
+
+# --------------------------------------------------
+# SCHEME FILTER
+# --------------------------------------------------
 
     scheme_list = sorted(df["Name Of Scheme"].dropna().unique())
 
@@ -152,6 +157,10 @@ if file:
     if scheme_filter != "All":
         df = df[df["Name Of Scheme"] == scheme_filter]
 
+# --------------------------------------------------
+# SURVEY CATEGORY FILTER
+# --------------------------------------------------
+
     survey_list = sorted(df["Survey Category"].dropna().unique())
 
     survey_filter = st.selectbox(
@@ -162,13 +171,15 @@ if file:
     if survey_filter != "All":
         df = df[df["Survey Category"] == survey_filter]
 
+# --------------------------------------------------
+# SERIAL NUMBER
+# --------------------------------------------------
+
     df.insert(0,"Sr. No.",range(1,len(df)+1))
 
-    st.metric("Total Records",len(df))
-
-# -------------------------------------------------
-# Add Print Column
-# -------------------------------------------------
+# --------------------------------------------------
+# PRINT COLUMN (SECOND COLUMN)
+# --------------------------------------------------
 
     def check_print(row):
 
@@ -177,11 +188,13 @@ if file:
         else:
             return ""
 
-    df["Print"] = df.apply(check_print,axis=1)
+    df.insert(1,"Print",df.apply(check_print,axis=1))
 
-# -------------------------------------------------
-# Grid Configuration
-# -------------------------------------------------
+    st.metric("Total Records",len(df))
+
+# --------------------------------------------------
+# AGGRID
+# --------------------------------------------------
 
     gb = GridOptionsBuilder.from_dataframe(df)
 
@@ -189,52 +202,35 @@ if file:
         filter=True,
         sortable=True,
         resizable=True,
-        flex=1
+        minWidth=120
     )
 
+    gb.configure_column("Sr. No.",width=80)
+    gb.configure_column("Print",width=70)
+
     gb.configure_selection("single")
-
-    cell_renderer = JsCode("""
-    class BtnRenderer {
-        init(params) {
-            this.eGui = document.createElement('button');
-            this.eGui.innerHTML = '🖨';
-            this.eGui.addEventListener('click', () => {
-                params.api.dispatchEvent({
-                    type: 'printRequested',
-                    data: params.node.data
-                });
-            });
-        }
-        getGui() {
-            return this.eGui;
-        }
-    }
-    """)
-
-    gb.configure_column("Print", cellRenderer=cell_renderer,width=70)
-
-# -------------------------------------------------
-# Show Grid
-# -------------------------------------------------
 
     grid = AgGrid(
 
         df,
+
         gridOptions=gb.build(),
+
         update_mode=GridUpdateMode.SELECTION_CHANGED,
-        allow_unsafe_jscode=True,
+
         fit_columns_on_grid_load=True,
+
         height=600
+
     )
 
-# -------------------------------------------------
-# Row Selection → Generate PDF
-# -------------------------------------------------
+# --------------------------------------------------
+# GET SELECTED ROW
+# --------------------------------------------------
 
     selected = grid["selected_rows"]
 
-    if selected:
+    if selected is not None and len(selected) > 0:
 
         rec = pd.Series(selected[0])
 
@@ -246,7 +242,7 @@ if file:
 
                 "📄 Download Connection Release Form PDF",
 
-                data=pdf,
+                pdf,
 
                 file_name=f"Connection_{rec['SR Number']}.pdf",
 
