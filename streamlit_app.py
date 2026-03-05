@@ -156,20 +156,21 @@ if file:
     # Clean column names
     df.columns = df.columns.str.strip()
 
-    # Replace NULL text
+    # Convert "NULL" text to actual null
     df.replace("NULL", pd.NA, inplace=True)
 
-    # Serial number
+    # Serial number column
     df.insert(0,"Sr No",range(1,len(df)+1))
 
+
 # ---------------------------------------------------------
-# SEARCH SR
+# SEARCH SR NUMBER
 # ---------------------------------------------------------
 
     search = st.text_input("🔎 Search SR Number")
 
     if search:
-        df = df[df["SR Number"].astype(str).str.contains(search)]
+        df = df[df["SR Number"].astype(str).str.contains(search,case=False)]
 
 
 # ---------------------------------------------------------
@@ -230,9 +231,11 @@ if file:
     with tab2:
 
         release_df = df[
-            (df["Date Of TR Recv"].notna()) &
-            (df["Date Of Release Conn"].isna())
+            df["Date Of TR Recv"].notna() &
+            (df["Date Of Release Conn"].isna() |
+             (df["Date Of Release Conn"].astype(str).str.strip()==""))
         ].copy()
+
 
 # ---------------------------------------------------------
 # METRICS
@@ -241,7 +244,7 @@ if file:
         col1,col2 = st.columns(2)
 
         col1.metric("Release Pending",len(release_df))
-        col2.metric("TR Received",release_df["Date Of TR Recv"].notna().sum())
+        col2.metric("TR Received",df["Date Of TR Recv"].notna().sum())
 
 
 # ---------------------------------------------------------
