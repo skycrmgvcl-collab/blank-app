@@ -6,7 +6,6 @@ st.set_page_config(page_title="PPR Monitoring Dashboard", layout="wide")
 
 st.title("⚡ PPR Monitoring Dashboard")
 
-
 # ---------------------------------------------------
 # LOAD FILE
 # ---------------------------------------------------
@@ -44,7 +43,7 @@ def clean_dataframe(df):
 
 
 # ---------------------------------------------------
-# RELEASE FORM
+# RELEASE FORM HTML
 # ---------------------------------------------------
 
 def create_release_html(row):
@@ -95,12 +94,12 @@ padding:6px;
 
 <table>
 
-<tr><td width="30%">SR Number</td><td>{row["SR Number"]}</td></tr>
-<tr><td>Name</td><td>{row["Name Of Applicant"]}</td></tr>
-<tr><td>Village</td><td>{row["Village Or City"]}</td></tr>
-<tr><td>Scheme</td><td>{row["Name Of Scheme"]}</td></tr>
-<tr><td>Load</td><td>{row["Demand Load"]} {row["Load Uom"]}</td></tr>
-<tr><td>TR MR No</td><td>{row["TR MR No"]}</td></tr>
+<tr><td width="30%">SR Number</td><td>{row.get("SR Number","")}</td></tr>
+<tr><td>Name</td><td>{row.get("Name Of Applicant","")}</td></tr>
+<tr><td>Village</td><td>{row.get("Village Or City","")}</td></tr>
+<tr><td>Scheme</td><td>{row.get("Name Of Scheme","")}</td></tr>
+<tr><td>Load</td><td>{row.get("Demand Load","")} {row.get("Load Uom","")}</td></tr>
+<tr><td>TR MR No</td><td>{row.get("TR MR No","")}</td></tr>
 
 </table>
 
@@ -124,59 +123,52 @@ file = st.file_uploader("Upload PPR Excel / CSV", type=["xlsx","xls","csv"])
 if file:
 
     df = load_file(file)
-
     df = clean_dataframe(df)
 
 # ---------------------------------------------------
-# SIDEBAR FILTER
+# SIDEBAR FILTERS
 # ---------------------------------------------------
 
     st.sidebar.header("Filters")
 
     schemes = sorted(df["Name Of Scheme"].unique())
 
-    scheme = st.sidebar.multiselect(
+    selected_scheme = st.sidebar.multiselect(
         "Name Of Scheme",
         schemes,
         default=schemes
     )
 
-    df = df[df["Name Of Scheme"].isin(scheme)]
+    df = df[df["Name Of Scheme"].isin(selected_scheme)]
 
     sr_types = sorted(df["SR Type"].unique())
 
-    sr = st.sidebar.multiselect(
+    selected_sr = st.sidebar.multiselect(
         "SR Type",
         sr_types,
         default=sr_types
     )
 
-    df = df[df["SR Type"].isin(sr)]
+    df = df[df["SR Type"].isin(selected_sr)]
 
     survey = sorted(df["Survey Category"].unique())
 
-    survey_sel = st.sidebar.multiselect(
+    selected_survey = st.sidebar.multiselect(
         "Survey Category",
         survey,
         default=survey
     )
 
-    df = df[df["Survey Category"].isin(survey_sel)]
+    df = df[df["Survey Category"].isin(selected_survey)]
 
 # ---------------------------------------------------
 # SEARCH
 # ---------------------------------------------------
 
-    search = st.text_input("Search SR Number")
+    search = st.text_input("🔎 Search SR Number")
 
     if search:
-        df = df[df["SR Number"].str.contains(search)]
-
-# ---------------------------------------------------
-# OPEN SR ONLY
-# ---------------------------------------------------
-
-    df = df[df["SR Status"].str.upper()=="OPEN"]
+        df = df[df["SR Number"].astype(str).str.contains(search)]
 
 # ---------------------------------------------------
 # TABS
@@ -184,49 +176,52 @@ if file:
 
     tab1,tab2,tab3,tab4 = st.tabs([
         "Paid Pending",
-        "TMN Pending",
+        "Pending to Issue TMN",
         "Release Pending",
         "All Records"
     ])
 
 # ---------------------------------------------------
-# TAB 1
+# TAB 1 : PAID PENDING
 # ---------------------------------------------------
 
     with tab1:
 
-        ppr_df = df[df["Date Of WCC"]==""]
+        ppr_df = df[
+            (df["SR Status"].astype(str).str.upper()=="OPEN") &
+            (df["Date Of WCC"].astype(str).str.strip()=="")
+        ]
 
         st.metric("Paid Pending",len(ppr_df))
 
         st.dataframe(ppr_df,use_container_width=True)
 
-
 # ---------------------------------------------------
-# TAB 2
+# TAB 2 : TMN PENDING
 # ---------------------------------------------------
 
     with tab2:
 
         tmn_df = df[
-            (df["Date Of WCC"]!="") &
-            (df["Date Of TMN Issued"]=="")
+            (df["SR Status"].astype(str).str.upper()=="OPEN") &
+            (df["Date Of WCC"].astype(str).str.strip()!="") &
+            (df["Date Of TMN Issued"].astype(str).str.strip()=="")
         ]
 
-        st.metric("TMN Pending",len(tmn_df))
+        st.metric("Pending to Issue TMN",len(tmn_df))
 
         st.dataframe(tmn_df,use_container_width=True)
 
-
 # ---------------------------------------------------
-# TAB 3
+# TAB 3 : RELEASE PENDING
 # ---------------------------------------------------
 
     with tab3:
 
         release_df = df[
-            (df["TR MR No"]!="") &
-            (df["Date Of Release Conn"]=="")
+            (df["SR Status"].astype(str).str.upper()=="OPEN") &
+            (df["TR MR No"].astype(str).str.strip()!="") &
+            (df["Date Of Release Conn"].astype(str).str.strip()=="")
         ].copy()
 
         st.metric("Release Pending",len(release_df))
@@ -244,12 +239,10 @@ if file:
 
             col3.markdown(link,unsafe_allow_html=True)
 
-
         st.dataframe(release_df,use_container_width=True)
 
-
 # ---------------------------------------------------
-# TAB 4
+# TAB 4 : ALL RECORDS
 # ---------------------------------------------------
 
     with tab4:
@@ -258,15 +251,14 @@ if file:
 
         st.dataframe(df,use_container_width=True)
 
-
 # ---------------------------------------------------
 # EXPORT
 # ---------------------------------------------------
 
     st.download_button(
-        "Export Data",
+        "📥 Export Filtered Data",
         df.to_csv(index=False),
-        file_name="ppr_data.csv"
+        file_name="ppr_filtered_data.csv"
     )
 
 else:
