@@ -1,14 +1,14 @@
 import streamlit as st
 import pandas as pd
-from st_aggrid import AgGrid, GridOptionsBuilder, JsCode
 import base64
 
 st.set_page_config(page_title="PPR Monitoring Dashboard", layout="wide")
 
 st.title("⚡ PPR Monitoring Dashboard")
 
+
 # ---------------------------------------------------
-# FILE LOAD (CACHE)
+# LOAD FILE
 # ---------------------------------------------------
 
 @st.cache_data
@@ -28,7 +28,7 @@ def load_file(file):
 
 
 # ---------------------------------------------------
-# CLEAN DATAFRAME (IMPORTANT)
+# CLEAN DATA
 # ---------------------------------------------------
 
 def clean_dataframe(df):
@@ -36,44 +36,51 @@ def clean_dataframe(df):
     df = df.copy()
 
     df = df.fillna("")
-
     df = df.astype(str)
 
-    # remove tabs / newline characters
-    df = df.replace(r'[\t\r\n]+', ' ', regex=True)
-
-    # trim spaces
-    df = df.applymap(lambda x: x.strip())
+    df = df.replace(r'[\t\r\n]+',' ',regex=True)
 
     return df
 
 
 # ---------------------------------------------------
-# RELEASE FORM HTML
+# RELEASE FORM
 # ---------------------------------------------------
 
 def create_release_html(row):
 
     html=f"""
-<!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">
 
 <style>
 
-@page {{ size:A4; margin:8mm; }}
-
 body {{
-font-family:'Shruti','Nirmala UI';
+font-family: Shruti;
 font-size:14px;
 }}
 
-.header {{text-align:center;font-weight:bold;font-size:22px}}
-.title {{text-align:center;font-weight:bold;font-size:18px}}
+.header {{
+text-align:center;
+font-weight:bold;
+font-size:22px;
+}}
 
-table {{width:100%;border-collapse:collapse}}
-td {{padding:6px}}
+.title {{
+text-align:center;
+font-weight:bold;
+font-size:18px;
+}}
+
+table {{
+width:100%;
+border-collapse:collapse;
+}}
+
+td {{
+padding:6px;
+}}
 
 </style>
 
@@ -88,59 +95,24 @@ td {{padding:6px}}
 
 <table>
 
-<tr><td width="30%">SR Number</td><td>{row.get("SR Number","")}</td></tr>
-
-<tr><td>Name</td><td>{row.get("Name Of Applicant","")}</td></tr>
-
-<tr><td>Village</td><td>{row.get("Village Or City","")}</td></tr>
-
-<tr><td>Scheme</td><td>{row.get("Name Of Scheme","")}</td></tr>
-
-<tr><td>Load</td><td>{row.get("Demand Load","")} {row.get("Load Uom","")}</td></tr>
-
-<tr><td>TR MR No</td><td>{row.get("TR MR No","")}</td></tr>
+<tr><td width="30%">SR Number</td><td>{row["SR Number"]}</td></tr>
+<tr><td>Name</td><td>{row["Name Of Applicant"]}</td></tr>
+<tr><td>Village</td><td>{row["Village Or City"]}</td></tr>
+<tr><td>Scheme</td><td>{row["Name Of Scheme"]}</td></tr>
+<tr><td>Load</td><td>{row["Demand Load"]} {row["Load Uom"]}</td></tr>
+<tr><td>TR MR No</td><td>{row["TR MR No"]}</td></tr>
 
 </table>
 
 <br><br>
 
-Customer Sign &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Employee Sign
+Customer Sign &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Employee Sign
 
 </body>
 </html>
 """
 
     return base64.b64encode(html.encode()).decode()
-
-
-# ---------------------------------------------------
-# GRID FUNCTION
-# ---------------------------------------------------
-
-def show_grid(data,key):
-
-    data = clean_dataframe(data)
-
-    gb = GridOptionsBuilder.from_dataframe(data)
-
-    gb.configure_default_column(
-        filter=True,
-        sortable=True,
-        resizable=True
-    )
-
-    gb.configure_pagination(
-        paginationAutoPageSize=False,
-        paginationPageSize=50
-    )
-
-    AgGrid(
-        data,
-        gridOptions=gb.build(),
-        height=650,
-        fit_columns_on_grid_load=True,
-        key=key
-    )
 
 
 # ---------------------------------------------------
@@ -153,50 +125,55 @@ if file:
 
     df = load_file(file)
 
+    df = clean_dataframe(df)
+
 # ---------------------------------------------------
-# SIDEBAR FILTERS
+# SIDEBAR FILTER
 # ---------------------------------------------------
 
     st.sidebar.header("Filters")
 
     schemes = sorted(df["Name Of Scheme"].unique())
-    selected_scheme = st.sidebar.multiselect(
+
+    scheme = st.sidebar.multiselect(
         "Name Of Scheme",
         schemes,
         default=schemes
     )
 
-    df = df[df["Name Of Scheme"].isin(selected_scheme)]
+    df = df[df["Name Of Scheme"].isin(scheme)]
 
     sr_types = sorted(df["SR Type"].unique())
-    selected_sr = st.sidebar.multiselect(
+
+    sr = st.sidebar.multiselect(
         "SR Type",
         sr_types,
         default=sr_types
     )
 
-    df = df[df["SR Type"].isin(selected_sr)]
+    df = df[df["SR Type"].isin(sr)]
 
     survey = sorted(df["Survey Category"].unique())
-    selected_survey = st.sidebar.multiselect(
+
+    survey_sel = st.sidebar.multiselect(
         "Survey Category",
         survey,
         default=survey
     )
 
-    df = df[df["Survey Category"].isin(selected_survey)]
+    df = df[df["Survey Category"].isin(survey_sel)]
 
 # ---------------------------------------------------
 # SEARCH
 # ---------------------------------------------------
 
-    search = st.text_input("🔎 Search SR Number")
+    search = st.text_input("Search SR Number")
 
     if search:
-        df = df[df["SR Number"].astype(str).str.contains(search)]
+        df = df[df["SR Number"].str.contains(search)]
 
 # ---------------------------------------------------
-# ONLY OPEN SR
+# OPEN SR ONLY
 # ---------------------------------------------------
 
     df = df[df["SR Status"].str.upper()=="OPEN"]
@@ -206,14 +183,14 @@ if file:
 # ---------------------------------------------------
 
     tab1,tab2,tab3,tab4 = st.tabs([
-        "Paid Pending Report",
-        "Pending to Issue TMN",
+        "Paid Pending",
+        "TMN Pending",
         "Release Pending",
         "All Records"
     ])
 
 # ---------------------------------------------------
-# TAB 1 : PAID PENDING
+# TAB 1
 # ---------------------------------------------------
 
     with tab1:
@@ -222,11 +199,11 @@ if file:
 
         st.metric("Paid Pending",len(ppr_df))
 
-        show_grid(ppr_df,"ppr_grid")
+        st.dataframe(ppr_df,use_container_width=True)
 
 
 # ---------------------------------------------------
-# TAB 2 : TMN PENDING
+# TAB 2
 # ---------------------------------------------------
 
     with tab2:
@@ -238,11 +215,11 @@ if file:
 
         st.metric("TMN Pending",len(tmn_df))
 
-        show_grid(tmn_df,"tmn_grid")
+        st.dataframe(tmn_df,use_container_width=True)
 
 
 # ---------------------------------------------------
-# TAB 3 : RELEASE PENDING
+# TAB 3
 # ---------------------------------------------------
 
     with tab3:
@@ -254,69 +231,43 @@ if file:
 
         st.metric("Release Pending",len(release_df))
 
-        release_df["release_html"] = release_df.apply(create_release_html,axis=1)
+        for i,row in release_df.iterrows():
 
-        release_df.insert(0,"Print","")
+            col1,col2,col3 = st.columns([3,3,1])
 
-        renderer = JsCode("""
+            col1.write(row["SR Number"])
+            col2.write(row["Name Of Applicant"])
 
-class Renderer{
+            html = create_release_html(row)
 
-init(params){
+            link = f'<a href="data:text/html;base64,{html}" target="_blank">🖨 Print</a>'
 
-this.eGui=document.createElement('span');
-this.eGui.innerHTML='🖨';
-this.eGui.style.cursor='pointer';
+            col3.markdown(link,unsafe_allow_html=True)
 
-this.eGui.addEventListener('click',()=>{
 
-const b64=params.data.release_html;
+        st.dataframe(release_df,use_container_width=True)
 
-const win=window.open("","_blank");
-
-const bytes=Uint8Array.from(atob(b64),c=>c.charCodeAt(0));
-const html=new TextDecoder("utf-8").decode(bytes);
-
-win.document.write(html);
-win.document.close();
-
-});
-
-}
-
-getGui(){return this.eGui;}
-
-}
-""")
-
-        gb = GridOptionsBuilder.from_dataframe(release_df)
-
-        gb.configure_default_column(filter=True,sortable=True,resizable=True)
-
-        gb.configure_pagination(paginationPageSize=50)
-
-        gb.configure_column("Print",cellRenderer=renderer,width=70)
-
-        gb.configure_column("release_html",hide=True)
-
-        AgGrid(
-            release_df,
-            gridOptions=gb.build(),
-            allow_unsafe_jscode=True,
-            height=650,
-            key="release_grid"
-        )
 
 # ---------------------------------------------------
-# TAB 4 : ALL RECORDS
+# TAB 4
 # ---------------------------------------------------
 
     with tab4:
 
         st.metric("Total Records",len(df))
 
-        show_grid(df,"all_grid")
+        st.dataframe(df,use_container_width=True)
 
+
+# ---------------------------------------------------
+# EXPORT
+# ---------------------------------------------------
+
+    st.download_button(
+        "Export Data",
+        df.to_csv(index=False),
+        file_name="ppr_data.csv"
+    )
 
 else:
 
