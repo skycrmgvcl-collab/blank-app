@@ -32,7 +32,20 @@ def load_file(file):
 # ---------------------------------------------------
 
 def is_blank(value):
-    return str(value).strip() == "" or str(value).strip().upper() == "NULL"
+    if pd.isna(value):
+        return True
+
+    text = str(value).strip()
+    return text == "" or text.upper() == "NULL"
+
+
+def normalized_text(series):
+    return series.astype(str).str.strip().str.upper()
+
+
+def is_open_status(series):
+    status = normalized_text(series)
+    return status.eq("OPEN") | status.str.startswith("OPEN ")
 
 
 # ---------------------------------------------------
@@ -178,7 +191,7 @@ if file:
     with tab1:
 
         ppr_df = df[
-            (df["SR Status"].str.upper()=="OPEN") &
+            is_open_status(df["SR Status"]) &
             (~df["Date Of FQ Paid"].apply(is_blank)) &
             (df["Date Of WCC"].apply(is_blank))
         ]
@@ -195,7 +208,7 @@ if file:
     with tab2:
 
         tmn_df = df[
-            (df["SR Status"].str.upper()=="OPEN") &
+            is_open_status(df["SR Status"]) &
             (~df["Date Of WCC"].apply(is_blank)) &
             (df["Date Of TMN Issued"].apply(is_blank))
         ]
@@ -212,7 +225,7 @@ if file:
     with tab3:
 
         release_df = df[
-            (df["SR Status"].str.upper()=="OPEN") &
+            is_open_status(df["SR Status"]) &
             (~df["TR MR No"].apply(is_blank)) &
             (df["Date Of Release Conn"].apply(is_blank))
         ].copy()
