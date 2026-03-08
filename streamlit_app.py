@@ -3,7 +3,6 @@ import pandas as pd
 import base64
 
 st.set_page_config(page_title="PPR Monitoring Dashboard", layout="wide")
-
 st.title("⚡ PPR Monitoring Dashboard")
 
 # ---------------------------------------------------
@@ -20,7 +19,7 @@ def load_file(file):
 
     df.columns = df.columns.str.strip()
 
-    # treat NULL as blank
+    # convert NULL → blank
     df = df.replace(r'^\s*NULL\s*$', '', regex=True)
 
     df = df.fillna("")
@@ -29,7 +28,15 @@ def load_file(file):
 
 
 # ---------------------------------------------------
-# RELEASE FORM
+# CHECK BLANK FUNCTION
+# ---------------------------------------------------
+
+def is_blank(value):
+    return str(value).strip() == "" or str(value).strip().upper() == "NULL"
+
+
+# ---------------------------------------------------
+# RELEASE FORM HTML
 # ---------------------------------------------------
 
 def create_release_html(row):
@@ -38,8 +45,8 @@ def create_release_html(row):
 <html>
 <head>
 <meta charset="UTF-8">
-
 <style>
+
 body {{
 font-family: Shruti;
 font-size:14px;
@@ -65,8 +72,8 @@ border-collapse:collapse;
 td {{
 padding:6px;
 }}
-</style>
 
+</style>
 </head>
 
 <body onload="window.print()">
@@ -77,12 +84,14 @@ padding:6px;
 <br>
 
 <table>
+
 <tr><td width="30%">SR Number</td><td>{row.get("SR Number","")}</td></tr>
 <tr><td>Name</td><td>{row.get("Name Of Applicant","")}</td></tr>
 <tr><td>Village</td><td>{row.get("Village Or City","")}</td></tr>
 <tr><td>Scheme</td><td>{row.get("Name Of Scheme","")}</td></tr>
 <tr><td>Load</td><td>{row.get("Demand Load","")} {row.get("Load Uom","")}</td></tr>
 <tr><td>TR MR No</td><td>{row.get("TR MR No","")}</td></tr>
+
 </table>
 
 <br><br>
@@ -112,35 +121,35 @@ if file:
 
     st.sidebar.header("Filters")
 
-    schemes = sorted(df["Name Of Scheme"].unique())
+    schemes = sorted(df["Name Of Scheme"].dropna().unique())
 
-    selected_scheme = st.sidebar.multiselect(
+    scheme_sel = st.sidebar.multiselect(
         "Name Of Scheme",
         schemes,
         default=schemes
     )
 
-    df = df[df["Name Of Scheme"].isin(selected_scheme)]
+    df = df[df["Name Of Scheme"].isin(scheme_sel)]
 
-    sr_types = sorted(df["SR Type"].unique())
+    sr_types = sorted(df["SR Type"].dropna().unique())
 
-    selected_sr = st.sidebar.multiselect(
+    sr_sel = st.sidebar.multiselect(
         "SR Type",
         sr_types,
         default=sr_types
     )
 
-    df = df[df["SR Type"].isin(selected_sr)]
+    df = df[df["SR Type"].isin(sr_sel)]
 
-    survey = sorted(df["Survey Category"].unique())
+    survey = sorted(df["Survey Category"].dropna().unique())
 
-    selected_survey = st.sidebar.multiselect(
+    survey_sel = st.sidebar.multiselect(
         "Survey Category",
         survey,
         default=survey
     )
 
-    df = df[df["Survey Category"].isin(selected_survey)]
+    df = df[df["Survey Category"].isin(survey_sel)]
 
 # ---------------------------------------------------
 # SEARCH
@@ -170,13 +179,14 @@ if file:
 
         ppr_df = df[
             (df["SR Status"].str.upper()=="OPEN") &
-            (df["Date Of FQ Paid"].astype(str).str.strip()!="") &
-            (df["Date Of WCC"].astype(str).str.strip()=="")
+            (~df["Date Of FQ Paid"].apply(is_blank)) &
+            (df["Date Of WCC"].apply(is_blank))
         ]
 
         st.metric("Paid Pending",len(ppr_df))
 
         st.dataframe(ppr_df,use_container_width=True)
+
 
 # ---------------------------------------------------
 # TAB 2 : TMN PENDING
@@ -186,13 +196,14 @@ if file:
 
         tmn_df = df[
             (df["SR Status"].str.upper()=="OPEN") &
-            (df["Date Of WCC"].astype(str).str.strip()!="") &
-            (df["Date Of TMN Issued"].astype(str).str.strip()=="")
+            (~df["Date Of WCC"].apply(is_blank)) &
+            (df["Date Of TMN Issued"].apply(is_blank))
         ]
 
         st.metric("Pending to Issue TMN",len(tmn_df))
 
         st.dataframe(tmn_df,use_container_width=True)
+
 
 # ---------------------------------------------------
 # TAB 3 : RELEASE PENDING
@@ -202,8 +213,8 @@ if file:
 
         release_df = df[
             (df["SR Status"].str.upper()=="OPEN") &
-            (df["TR MR No"].astype(str).str.strip()!="") &
-            (df["Date Of Release Conn"].astype(str).str.strip()=="")
+            (~df["TR MR No"].apply(is_blank)) &
+            (df["Date Of Release Conn"].apply(is_blank))
         ].copy()
 
         st.metric("Release Pending",len(release_df))
@@ -232,6 +243,7 @@ if file:
         st.metric("Total Records",len(df))
 
         st.dataframe(df,use_container_width=True)
+
 
 # ---------------------------------------------------
 # EXPORT
